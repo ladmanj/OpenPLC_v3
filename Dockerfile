@@ -9,6 +9,7 @@ RUN mkdir /persistent
 VOLUME /persistent
 
 RUN ./install.sh docker \
+    && find . -type f -name "list_ports_linux.py" -print0 | xargs -0 sed -i  's/'"if info.subsystem != \"platform\""'/'"] #if info.subsystem != \"platform\""'/g' \
     && touch /persistent/mbconfig.cfg \
     && touch /persistent/persistent.file \
     && mkdir /persistent/st_files \
@@ -25,6 +26,8 @@ RUN ./install.sh docker \
     && ln -s /persistent/openplc.db /workdir/webserver/openplc.db \
     && ln -s /persistent/dnp3.cfg /workdir/webserver/dnp3.cfg \
     && ln -s /persistent/st_files /workdir/webserver/st_files \
-    && ln -s /persistent/active_program /workdir/webserver/active_program
+    && ln -s /persistent/active_program /workdir/webserver/active_program \
+    && mv --backup=t /workdir/webserver/core/openplc /persistent/openplc \
+    && ln -s /persistent/openplc /workdir/webserver/core/openplc
 
 ENTRYPOINT ["./start_openplc.sh"]
